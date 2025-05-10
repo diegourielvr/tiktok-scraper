@@ -15,7 +15,7 @@ TamperMonkey for Safari.
 
 While you can build the extension yourself, I recommend you to download the
 built zip file
-[from GitHub Releases](https://github.com/Dinoosauro/tiktok-to-ytdlp/releases/latest).
+[from GitHub Releases](https://github.com/diegourielvr/tiktok-scraper/releases/tag/v1.0.0).
 If you still want to build it, look at the instructions below.
 
 ### Chromium
