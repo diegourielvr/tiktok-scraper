@@ -12,6 +12,46 @@ Download the extension by following the instructions you can find in
 options (if you want to), and click on the button to start the conversion. The
 extesion will take care of everything else.
 
+
+### Scraping TikTok Video URLs & Metadata
+
+Extract video details (URLs, views, desc, dates, hashtags.) and save them in a structured JSON file.
+
+**Example**
+
+```
+[
+  {
+    "views": "248700",
+    "desc": "C++, C#, php, javascript, lua, python, rust edit in 1 video ",
+    "hashtags": "#edit,#programminglanguage,#fyp,#software,#programming,#softwareengineer,#csharp,#csharpprogramming,#cplusplus,#php,#phpcoding,#javacsript,#lua,#python,#pythonprogramming,#rust,#softwaredevelopment,#software,#programmingedit,#coding,#codingedit,#pythonprogramminglanguage,#cplusplusprogramming",
+    "publishDate": "4-3",
+    "scrapedAt": "2025-05-10T08:14:12.562Z",
+    "caption": "",
+    "url": "https://www.tiktok.com/@maxae.exe/video/7489284783457996048"
+  }
+]
+```
+
+### Comments 
+
+Extract comments from a specific TikTok video and save them in JSON format.
+
+
+**Example**
+
+```
+[
+  {
+    "comment": "programming edit? thats new",
+    "likes": "467",
+    "publishDate": "4-5",
+    "scrapedAt": "2025-05-10T08:14:38.473Z",
+    "url": "https://www.tiktok.com/@gigin425"
+  }
+]
+```
+
 ### From the console
 
 Open the TikTok webpage of the user/sound/etc. you want all the videos
