@@ -51,35 +51,69 @@ var skipLinks = [];
  */
 function loadWebpage() {
     if (document.querySelectorAll(".tiktok-qmnyxf-SvgContainer").length === 0) { // Checks if the SVG loading animation is present in the DOM
-        !scriptOptions.advanced.get_array_after_scroll && scriptOptions.advanced.delete_from_dom && window.scrollTo({ top: document.body.scrollHeight - (window.outerHeight * (window.devicePixelRatio || 1)), behavior: 'smooth' }); // If items from the DOM are removed, the page must be scrolled a little bit higher, so that the TikTok refresh is triggered
-        setTimeout(() => {
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); // Scroll to the bottom of the page
+        if (window.location.href.includes('/video/')) {
+            const scrollContainer = document.querySelector(".css-1qp5gj2-DivCommentListContainer"); // Div que contiene los comentarios para hacer scroll
+
+            !scriptOptions.advanced.get_array_after_scroll && scriptOptions.advanced.delete_from_dom && scrollContainer.scrollTo({ top: scrollContainer.scrollHeight - (scrollContainer.outerHeight * (scrollContainer.devicePixelRatio || 1)), behavior: 'smooth' }); // If items from the DOM are removed, the page must be scrolled a little bit higher, so that the TikTok refresh is triggered
             setTimeout(() => {
-                if (height !== document.body.scrollHeight) { // The webpage has scrolled the previous time, so we can try another scroll
-                    if (!scriptOptions.advanced.get_array_after_scroll) {
-                        addArray();
-                        if (scriptOptions.advanced.maximum_downloads < (Array.from(containerMap).length + skipLinks.length)) { // If the number of fetched items is above the permitted one, download the script and don't do anything.
-                            ytDlpScript();
-                            return;
+                scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' }); // Scroll to the bottom of the page
+                setTimeout(() => {
+                    if (height !== scrollContainer.scrollHeight) { // The webpage has scrolled the previous time, so we can try another scroll
+                        if (!scriptOptions.advanced.get_array_after_scroll) {
+                            addArray();
+                            if (scriptOptions.advanced.maximum_downloads < (Array.from(containerMap).length + skipLinks.length)) { // If the number of fetched items is above the permitted one, download the script and don't do anything.
+                                ytDlpScript();
+                                return;
+                            }
                         }
-                    }
-                    setTimeout(() => {
-                        height = document.body.scrollHeight;
-                        loadWebpage();
-                    }, Math.floor(Math.random() * scriptOptions.scrolling_max_time + scriptOptions.scrolling_min_time));
-                } else {
-                    setTimeout(() => {
-                        if (document.querySelectorAll(".tiktok-qmnyxf-SvgContainer").length === 0 && height == document.body.scrollHeight) { // By scrolling, the webpage height doesn't change, so let's download the txt file
-                            scriptOptions.node.isResolveTime = true;
-                            ytDlpScript();
-                            skipLinks = []; // Restore so that the items can be re-downloaded
-                        } else { // The SVG animation is still there, so there are other contents to load.
+                        setTimeout(() => {
+                            height = scrollContainer.scrollHeight;
                             loadWebpage();
+                        }, Math.floor(Math.random() * scriptOptions.scrolling_max_time + scriptOptions.scrolling_min_time));
+                    } else {
+                        setTimeout(() => {
+                            if (document.querySelectorAll(".tiktok-qmnyxf-SvgContainer").length === 0 && height == scrollContainer.scrollHeight) { // By scrolling, the webpage height doesn't change, so let's download the txt file
+                                scriptOptions.node.isResolveTime = true;
+                                ytDlpScript();
+                                skipLinks = []; // Restore so that the items can be re-downloaded
+                            } else { // The SVG animation is still there, so there are other contents to load.
+                                loadWebpage();
+                            }
+                        }, 3500)
+                    }
+                }, 150);
+            }, !scriptOptions.advanced.get_array_after_scroll && scriptOptions.advanced.delete_from_dom ? Math.floor(Math.random() * 600 + 600) : 1);
+        } else {
+            !scriptOptions.advanced.get_array_after_scroll && scriptOptions.advanced.delete_from_dom && window.scrollTo({ top: document.body.scrollHeight - (window.outerHeight * (window.devicePixelRatio || 1)), behavior: 'smooth' }); // If items from the DOM are removed, the page must be scrolled a little bit higher, so that the TikTok refresh is triggered
+            setTimeout(() => {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); // Scroll to the bottom of the page
+                setTimeout(() => {
+                    if (height !== document.body.scrollHeight) { // The webpage has scrolled the previous time, so we can try another scroll
+                        if (!scriptOptions.advanced.get_array_after_scroll) {
+                            addArray();
+                            if (scriptOptions.advanced.maximum_downloads < (Array.from(containerMap).length + skipLinks.length)) { // If the number of fetched items is above the permitted one, download the script and don't do anything.
+                                ytDlpScript();
+                                return;
+                            }
                         }
-                    }, 3500)
-                }
-            }, 150);
-        }, !scriptOptions.advanced.get_array_after_scroll && scriptOptions.advanced.delete_from_dom ? Math.floor(Math.random() * 600 + 600) : 1);
+                        setTimeout(() => {
+                            height = document.body.scrollHeight;
+                            loadWebpage();
+                        }, Math.floor(Math.random() * scriptOptions.scrolling_max_time + scriptOptions.scrolling_min_time));
+                    } else {
+                        setTimeout(() => {
+                            if (document.querySelectorAll(".tiktok-qmnyxf-SvgContainer").length === 0 && height == document.body.scrollHeight) { // By scrolling, the webpage height doesn't change, so let's download the txt file
+                                scriptOptions.node.isResolveTime = true;
+                                ytDlpScript();
+                                skipLinks = []; // Restore so that the items can be re-downloaded
+                            } else { // The SVG animation is still there, so there are other contents to load.
+                                loadWebpage();
+                            }
+                        }, 3500)
+                    }
+                }, 150);
+            }, !scriptOptions.advanced.get_array_after_scroll && scriptOptions.advanced.delete_from_dom ? Math.floor(Math.random() * 600 + 600) : 1);
+        }
     } else { // Let's wait 1 second, so that TikTok has time to load content.
         setTimeout(function () {
             loadWebpage()
@@ -91,21 +125,65 @@ function loadWebpage() {
  * Elaborate items in the page
  */
 function addArray() {
-    const e2eLinks = "[data-e2e=user-liked-item], [data-e2e=music-item], [data-e2e=user-post-item], [data-e2e=favorites-item], [data-e2e=challenge-item], [data-e2e=search_top-item]";
-    let container = document.querySelectorAll(scriptOptions.advanced.get_video_container_from_e2e ? e2eLinks : ".tiktok-1uqux2o-DivItemContainerV2, .css-ps7kg7-DivThreeColumnItemContainer, .tiktok-x6y88p-DivItemContainerV2, .css-1uqux2o-DivItemContainerV2, .css-x6y88p-DivItemContainerV2, .css-1soki6-DivItemContainerForSearch, .css-ps7kg7-DivThreeColumnItemContainer"); // Class of every video container
-    if (scriptOptions.advanced.get_video_container_from_e2e) container = Array.from(container).map(item => item.parentElement);
-    for (const tikTokItem of container) {
-        if (!tikTokItem) continue; // Skip nullish results
-        const getLink = scriptOptions.advanced.get_link_by_filter ? Array.from(tikTokItem.querySelectorAll("a")).filter(e => e.href.indexOf("/video/") !== -1 || e.href.indexOf("/photo/") !== -1)[0]?.href : tikTokItem.querySelector(`[data-e2e=user-post-item-desc], ${e2eLinks}`)?.querySelector("a")?.href; // If the new filter method is selected, the script will look for the first link that contains a video link structure. Otherwise, the script'll look for data tags that contain the video URL.
-        if (!scriptOptions.allow_images && getLink.indexOf("/photo/") !== -1) continue; // Avoid adding photo if the user doesn't want to.
-        if (scriptOptions.advanced.check_nullish_link && (getLink ?? "") === "") { // If the script needs to check if the link is nullish, and it's nullish...
-            if (scriptOptions.advanced.log_link_error) console.log("SCRIPT ERROR: Failed to get link!"); // If the user wants to print the error in the console, write it
-            continue; // And, in general, continue with the next link.
+    if (window.location.href.includes('/video/')) {
+        const e2eLinks = "[data-e2e=search-comment-container]";
+        let container = document.querySelectorAll(scriptOptions.advanced.get_video_container_from_e2e ? e2eLinks : ".css-1i7ohvi-DivCommentItemContainer"); // Class of every comment container
+        if (scriptOptions.advanced.get_video_container_from_e2e) container = Array.from(container).map(item => item.parentElement);
+        for (const tikTokItem of container) {
+            if (!tikTokItem) continue; // Skip nullish results
+            const getLink = scriptOptions.advanced.get_link_by_filter ? Array.from(tikTokItem.querySelectorAll("a")).filter(e => e.href.indexOf("/@") !== -1 || e.href.indexOf("/photo/") !== -1)[0]?.href : tikTokItem.querySelector(`[data-e2e=user-post-item-desc], ${e2eLinks}`)?.querySelector("a")?.href; // If the new filter method is selected, the script will look for the first link that contains a video link structure. Otherwise, the script'll look for data tags that contain the video URL.
+            if (!scriptOptions.allow_images && getLink.indexOf("/photo/") !== -1) continue; // Avoid adding photo if the user doesn't want to.
+            if (scriptOptions.advanced.check_nullish_link && (getLink ?? "") === "") { // If the script needs to check if the link is nullish, and it's nullish...
+                if (scriptOptions.advanced.log_link_error) console.log("SCRIPT ERROR: Failed to get link!"); // If the user wants to print the error in the console, write it
+                continue; // And, in general, continue with the next link.
+            }
+            if (skipLinks.indexOf(getLink) === -1) {
+                const comment = tikTokItem.querySelector("[data-e2e=comment-level-1]")?.textContent ?? ""; // intentar con '.css-xm2h10-PCommentText e1g2efjf6'
+                const publishDate = tikTokItem.querySelector(".css-rsan9a-SpanCreatedTime.e1g2efjf8")?.textContent ?? "";
+                const likes = tikTokItem.querySelector(".css-gb2mrc-SpanCount.ezxoskx3")?.textContent ?? "0";
+
+                containerMap.set(
+                    getLink,
+                    {
+                        comment: comment.replace(/\u00A0/g, " "), // replace &nbsp;
+                        likes: likes,
+                        publishDate: publishDate.replace(/\u00A0/g, " ").trim(),
+                        scrapedAt: new Date().toISOString(),
+                    }
+                )
+            }
         }
-        if (skipLinks.indexOf(getLink) === -1) {
-            const views = tikTokItem.querySelector(".css-cralc2-SpanPlayCount, [data-e2e=video-views]")?.innerHTML ?? "0";
-            const caption = tikTokItem.querySelector(".css-vi46v1-DivDesContainer a span")?.textContent ?? tikTokItem.querySelector(".css-a3te33-AVideoContainer picture img")?.alt ?? "";
-            containerMap.set(getLink, { views: `${views.replace(".", "").replace("K", "00").replace("M", "00000")}${(views.indexOf("K") !== -1 || views.indexOf("M") !== -1) && views.indexOf(".") === -1 ? "0" : ""}`, caption })
+    } else {
+        const e2eLinks = "[data-e2e=user-liked-item], [data-e2e=music-item], [data-e2e=user-post-item], [data-e2e=favorites-item], [data-e2e=challenge-item], [data-e2e=search_top-item]";
+        let container = document.querySelectorAll(scriptOptions.advanced.get_video_container_from_e2e ? e2eLinks : ".tiktok-1uqux2o-DivItemContainerV2, .css-ps7kg7-DivThreeColumnItemContainer, .tiktok-x6y88p-DivItemContainerV2, .css-1uqux2o-DivItemContainerV2, .css-x6y88p-DivItemContainerV2, .css-1soki6-DivItemContainerForSearch, .css-ps7kg7-DivThreeColumnItemContainer"); // Class of every video container
+        if (scriptOptions.advanced.get_video_container_from_e2e) container = Array.from(container).map(item => item.parentElement);
+        for (const tikTokItem of container) {
+            if (!tikTokItem) continue; // Skip nullish results
+            const getLink = scriptOptions.advanced.get_link_by_filter ? Array.from(tikTokItem.querySelectorAll("a")).filter(e => e.href.indexOf("/video/") !== -1 || e.href.indexOf("/photo/") !== -1)[0]?.href : tikTokItem.querySelector(`[data-e2e=user-post-item-desc], ${e2eLinks}`)?.querySelector("a")?.href; // If the new filter method is selected, the script will look for the first link that contains a video link structure. Otherwise, the script'll look for data tags that contain the video URL.
+            if (!scriptOptions.allow_images && getLink.indexOf("/photo/") !== -1) continue; // Avoid adding photo if the user doesn't want to.
+            if (scriptOptions.advanced.check_nullish_link && (getLink ?? "") === "") { // If the script needs to check if the link is nullish, and it's nullish...
+                if (scriptOptions.advanced.log_link_error) console.log("SCRIPT ERROR: Failed to get link!"); // If the user wants to print the error in the console, write it
+                continue; // And, in general, continue with the next link.
+            }
+            if (skipLinks.indexOf(getLink) === -1) {
+                const views = tikTokItem.querySelector(".css-cralc2-SpanPlayCount, [data-e2e=video-views]")?.innerHTML ?? "0";
+                const caption = tikTokItem.querySelector(".css-vi46v1-DivDesContainer a span")?.textContent ?? tikTokItem.querySelector(".css-a3te33-AVideoContainer picture img")?.alt ?? "";
+                const desc = tikTokItem.querySelector(".css-o0iybc-DivDescriptionContentContainer span:first-child")?.textContent ?? "";
+                const hashtagsItems= tikTokItem.querySelectorAll("a[data-e2e=search-common-link]") ?? "";
+                const hashtags = Array.from(hashtagsItems).map(link => link.querySelector("strong")?.textContent?.trim() ?? "");
+                const publishDate = tikTokItem.querySelector(".css-1lw2yb1-DivTimeTag.e19c29qe14")?.textContent ?? "";
+                containerMap.set(
+                    getLink,
+                    {
+                        views: `${views.replace(".", "").replace("K", "00").replace("M", "00000")}${(views.indexOf("K") !== -1 || views.indexOf("M") !== -1) && views.indexOf(".") === -1 ? "0" : ""}`,
+                        desc: desc.replace(/\u00A0/g, " "), // replace &nbsp;
+                        hashtags: hashtags.join(","),
+                        publishDate: publishDate.replace(/\u00A0/g, " ").trim(),
+                        scrapedAt: new Date().toISOString(),
+                        caption
+                    }
+                )
+            }
         }
     }
     if (!scriptOptions.advanced.get_array_after_scroll && scriptOptions.advanced.delete_from_dom) { // Delete all the items from the DOM. Only the last 20 items will be kept.
